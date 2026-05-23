@@ -49,7 +49,9 @@ export default function CategoriesClient({ categories: initial, productCounts }:
       if (e) { setError(e.message); setSaving(false); return; }
       setCategories(categories.map((c) => c.id === editing.id ? { ...c, ...form } : c));
     } else {
-      const { data, error: e } = await supabase.from('categories').insert([{ name: form.name, slug: form.slug }]).select().single();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sb2 = supabase as any;
+      const { data, error: e } = await sb2.from('categories').insert([{ name: form.name, slug: form.slug }]).select().single();
       if (e || !data) { setError(e?.message ?? 'خطأ غير معروف'); setSaving(false); return; }
       setCategories([...categories, data]);
     }
