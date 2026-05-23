@@ -6,6 +6,14 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+type TableRelationships = {
+  foreignKeyName: string
+  columns: string[]
+  isOneToOne?: boolean
+  referencedRelation: string
+  referencedColumns: string[]
+}[]
+
 export interface Database {
   public: {
     Tables: {
@@ -28,6 +36,7 @@ export interface Database {
           slug?: string
           created_at?: string
         }
+        Relationships: TableRelationships
       }
       products: {
         Row: {
@@ -66,6 +75,15 @@ export interface Database {
           is_featured?: boolean
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'products_category_id_fkey'
+            columns: ['category_id']
+            isOneToOne: false
+            referencedRelation: 'categories'
+            referencedColumns: ['id']
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -92,6 +110,7 @@ export interface Database {
           role?: 'client' | 'admin'
           created_at?: string
         }
+        Relationships: TableRelationships
       }
       orders: {
         Row: {
@@ -121,6 +140,15 @@ export interface Database {
           phone?: string | null
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'orders_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       order_items: {
         Row: {
@@ -147,6 +175,22 @@ export interface Database {
           price?: number
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'order_items_order_id_fkey'
+            columns: ['order_id']
+            isOneToOne: false
+            referencedRelation: 'orders'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'order_items_product_id_fkey'
+            columns: ['product_id']
+            isOneToOne: false
+            referencedRelation: 'products'
+            referencedColumns: ['id']
+          },
+        ]
       }
       site_content: {
         Row: {
@@ -164,6 +208,7 @@ export interface Database {
           content?: Json
           updated_at?: string
         }
+        Relationships: TableRelationships
       }
       evaluation_requests: {
         Row: {
@@ -199,6 +244,22 @@ export interface Database {
           notes?: string | null
           created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: 'evaluation_requests_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'evaluation_requests_product_id_fkey'
+            columns: ['product_id']
+            isOneToOne: false
+            referencedRelation: 'products'
+            referencedColumns: ['id']
+          },
+        ]
       }
       contact_messages: {
         Row: {
@@ -225,6 +286,7 @@ export interface Database {
           status?: 'new' | 'read' | 'archived'
           created_at?: string
         }
+        Relationships: TableRelationships
       }
     }
     Views: {
@@ -249,3 +311,6 @@ export type Order = Database['public']['Tables']['orders']['Row']
 export type OrderItem = Database['public']['Tables']['order_items']['Row']
 export type ContactMessage = Database['public']['Tables']['contact_messages']['Row']
 export type EvaluationRequest = Database['public']['Tables']['evaluation_requests']['Row']
+
+/** Profile fields commonly selected in admin auth checks */
+export type ProfileRoleRow = Pick<Profile, 'role' | 'full_name'>

@@ -43,15 +43,18 @@ export default function CategoriesClient({ categories: initial, productCounts }:
     setSaving(true);
 
     if (editing) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sb = supabase as any;
-      const { error: e } = await sb.from('categories').update({ name: form.name, slug: form.slug }).eq('id', editing.id);
+      const { error: e } = await supabase
+        .from('categories')
+        .update({ name: form.name, slug: form.slug })
+        .eq('id', editing.id);
       if (e) { setError(e.message); setSaving(false); return; }
       setCategories(categories.map((c) => c.id === editing.id ? { ...c, ...form } : c));
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sb2 = supabase as any;
-      const { data, error: e } = await sb2.from('categories').insert([{ name: form.name, slug: form.slug }]).select().single();
+      const { data, error: e } = await supabase
+        .from('categories')
+        .insert({ name: form.name, slug: form.slug })
+        .select()
+        .single();
       if (e || !data) { setError(e?.message ?? 'خطأ غير معروف'); setSaving(false); return; }
       setCategories([...categories, data]);
     }

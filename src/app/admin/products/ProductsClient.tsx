@@ -297,7 +297,10 @@ export default function ProductsClient({ products: initialProducts, categories }
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>القسم *</Label>
-                <Select value={form.category_id} onValueChange={(v) => setForm({ ...form, category_id: v })}>
+                <Select
+                  value={form.category_id}
+                  onValueChange={(v) => v && setForm({ ...form, category_id: v })}
+                >
                   <SelectTrigger><SelectValue placeholder="اختر قسم" /></SelectTrigger>
                   <SelectContent>
                     {categories.map((c) => (

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { adminSupabase } from '@/lib/supabase/admin';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import type { ProfileRoleRow } from '@/types/database.types';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerSupabaseClient();
@@ -15,11 +16,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/login?redirect=/admin');
   }
 
-  const { data: profile, error: profileError } = await adminSupabase
+  const { data: profileData, error: profileError } = await adminSupabase
     .from('profiles')
     .select('role, full_name')
     .eq('id', user.id)
     .maybeSingle();
+
+  const profile = profileData as ProfileRoleRow | null;
 
   if (profileError || profile?.role !== 'admin') {
     redirect('/');

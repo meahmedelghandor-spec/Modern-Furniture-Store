@@ -194,7 +194,7 @@ export default function OrdersClient({ requests: initial }: { requests: AdminReq
                       <div className="flex items-center gap-2">
                         <Select
                           value={req.status}
-                          onValueChange={(v) => updateStatus(req, v)}
+                          onValueChange={(v) => v && updateStatus(req, v)}
                           disabled={updatingId === req.id}
                         >
                           <SelectTrigger className="h-8 w-36 text-xs">
@@ -311,7 +311,7 @@ export default function OrdersClient({ requests: initial }: { requests: AdminReq
                 <h3 className="font-semibold text-sm mb-2">تحديث الحالة</h3>
                 <Select
                   value={selected.status}
-                  onValueChange={(v) => updateStatus(selected, v)}
+                  onValueChange={(v) => v && updateStatus(selected, v)}
                   disabled={updatingId === selected.id}
                 >
                   <SelectTrigger>

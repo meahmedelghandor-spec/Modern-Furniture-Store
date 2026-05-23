@@ -4,6 +4,7 @@ import { adminSupabase } from '@/lib/supabase/admin';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { mergeSiteContent } from '@/lib/site-content';
 import { DEFAULT_SITE_CONTENT, type SiteContent } from '@/types/site-content';
+import type { ProfileRoleRow } from '@/types/database.types';
 
 async function requireAdmin() {
   const supabase = await createServerSupabaseClient();
@@ -16,11 +17,13 @@ async function requireAdmin() {
     return { error: NextResponse.json({ error: 'غير مصرح' }, { status: 401 }) };
   }
 
-  const { data: profile } = await adminSupabase
+  const { data: profileData } = await adminSupabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .maybeSingle();
+
+  const profile = profileData as Pick<ProfileRoleRow, 'role'> | null;
 
   if (profile?.role !== 'admin') {
     return { error: NextResponse.json({ error: 'صلاحيات غير كافية' }, { status: 403 }) };
