@@ -47,6 +47,13 @@ export interface AboutContent {
   contactButton: string;
 }
 
+export interface SocialMediaLinks {
+  facebook: string;
+  instagram: string;
+  twitter: string;
+  whatsapp: string;
+}
+
 export interface ContactContent {
   metaTitle: string;
   metaDescription: string;
@@ -64,7 +71,17 @@ export interface ContactContent {
   formSuccessMessage: string;
   /** رابط Google Maps المضمّن (src الـ iframe) */
   googleMapsUrl: string;
+  /** عنوان قسم السوشيال ميديا */
+  socialLinksTitle: string;
+  socialLinks: SocialMediaLinks;
 }
+
+export const DEFAULT_SOCIAL_LINKS: SocialMediaLinks = {
+  facebook: '',
+  instagram: '',
+  twitter: '',
+  whatsapp: '',
+};
 
 export interface SiteContent {
   global: SiteGlobal;
@@ -171,6 +188,8 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     formSuccessTitle: 'تم إرسال رسالتك',
     formSuccessMessage: 'شكراً لتواصلك. سنرد عليك في أقرب وقت ممكن.',
     googleMapsUrl: '',
+    socialLinksTitle: 'تابعنا على',
+    socialLinks: { ...DEFAULT_SOCIAL_LINKS },
   },
 };
 

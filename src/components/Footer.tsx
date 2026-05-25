@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { HandCoins } from 'lucide-react';
 import { getSiteContent } from '@/lib/site-content';
+import SocialLinks from '@/components/SocialLinks';
 
 const footerLinks = [
   { href: '/', label: 'الرئيسية' },
@@ -11,7 +12,7 @@ const footerLinks = [
 ];
 
 export default async function Footer() {
-  const { global } = await getSiteContent();
+  const { global, contact } = await getSiteContent();
 
   return (
     <footer className="border-t bg-muted/30 mt-auto">
@@ -35,6 +36,15 @@ export default async function Footer() {
               </Link>
             ))}
           </nav>
+        </div>
+
+        {/* روابط السوشيال — من قاعدة البيانات مع fallback لواتساب من الإعدادات العامة */}
+        <div className="mt-8 flex justify-center">
+          <SocialLinks
+            social={contact.socialLinks}
+            whatsappFallback={global.whatsapp}
+            size="sm"
+          />
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-8">

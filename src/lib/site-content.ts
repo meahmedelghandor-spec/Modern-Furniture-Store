@@ -45,7 +45,14 @@ export function mergeSiteContent(
           ? partial.about.paragraphs
           : defaults.about.paragraphs,
     },
-    contact: { ...defaults.contact, ...(partial.contact ?? {}) },
+    contact: {
+      ...defaults.contact,
+      ...(partial.contact ?? {}),
+      socialLinks: {
+        ...defaults.contact.socialLinks,
+        ...(partial.contact?.socialLinks ?? {}),
+      },
+    },
   };
 }
 

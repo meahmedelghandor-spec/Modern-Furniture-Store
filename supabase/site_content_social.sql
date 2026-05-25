@@ -1,0 +1,14 @@
+-- روابط السوشيال ميديا تُخزَّن داخل JSON في جدول site_content (id = 'main')
+-- لا حاجة لجدول جديد. بعد تشغيل site_content.sql، عدّل المحتوى من لوحة:
+-- /admin/content → تبويب «تواصل معنا»
+--
+-- مثال على شكل الحقل داخل contact:
+-- {
+--   "socialLinksTitle": "تابعنا على",
+--   "socialLinks": {
+--     "facebook": "https://facebook.com/yourpage",
+--     "instagram": "https://instagram.com/yourpage",
+--     "twitter": "https://x.com/yourpage",
+--     "whatsapp": "https://wa.me/201012345678"
+--   }
+-- }

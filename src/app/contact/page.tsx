@@ -1,5 +1,6 @@
 import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 import { getSiteContent } from '@/lib/site-content';
+import SocialLinks from '@/components/SocialLinks';
 import ContactForm from './ContactForm';
 import type { Metadata } from 'next';
 
@@ -87,6 +88,15 @@ export default async function ContactPage() {
               </li>
             </ul>
             <p className="text-sm text-muted-foreground">{contact.footerNote}</p>
+
+            <SocialLinks
+              social={contact.socialLinks}
+              whatsappFallback={global.whatsapp}
+              title={contact.socialLinksTitle}
+              showTitle
+              size="md"
+              className="items-start pt-4 border-t"
+            />
           </div>
 
           <div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Category } from '@/types/database.types';
 import {
@@ -133,6 +133,21 @@ export default function ContentClient({ initialContent, categories }: Props) {
   const setContact = (patch: Partial<SiteContent['contact']>) =>
     setContent((c) => ({ ...c, contact: { ...c.contact, ...patch } }));
 
+  const setSocialLink = (key: keyof SiteContent['contact']['socialLinks'], value: string) =>
+    setContent((c) => ({
+      ...c,
+      contact: {
+        ...c.contact,
+        socialLinks: { ...c.contact.socialLinks, [key]: value },
+      },
+    }));
+
+  useEffect(() => {
+    if (!success) return;
+    const t = window.setTimeout(() => setSuccess(false), 4000);
+    return () => window.clearTimeout(t);
+  }, [success]);
+
   const handleSave = async () => {
     setSaving(true);
     setError(null);
@@ -160,6 +175,15 @@ export default function ContentClient({ initialContent, categories }: Props) {
 
   return (
     <div className="space-y-6">
+      {success && (
+        <div
+          role="status"
+          className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 max-w-sm w-[calc(100%-2rem)] rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800 text-center shadow-lg"
+        >
+          ✓ تم حفظ المحتوى بنجاح
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">محتوى الموقع</h1>
@@ -176,11 +200,6 @@ export default function ContentClient({ initialContent, categories }: Props) {
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
-        </div>
-      )}
-      {success && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          تم حفظ المحتوى بنجاح
         </div>
       )}
 
@@ -511,6 +530,50 @@ export default function ContentClient({ initialContent, categories }: Props) {
               onChange={(v) => setContact({ formSuccessMessage: v })}
               multiline
             />
+            <div className="sm:col-span-2 space-y-4 rounded-lg border border-dashed p-4 bg-muted/20">
+              <div>
+                <Label className="font-semibold">عنوان قسم السوشيال ميديا</Label>
+                <Input
+                  className="mt-2"
+                  value={content.contact.socialLinksTitle}
+                  onChange={(e) => setContact({ socialLinksTitle: e.target.value })}
+                  placeholder="تابعنا على"
+                />
+              </div>
+              <p className="text-sm font-semibold flex items-center gap-2">
+                <span>🔗</span> روابط وسائل التواصل
+              </p>
+              <p className="text-xs text-muted-foreground -mt-2">
+                اترك الحقل فارغاً لإخفاء الأيقونة. واتساب: إن تُرك فارغاً يُستخدم رقم الواتساب من تبويب «عام».
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field
+                  label="فيسبوك"
+                  value={content.contact.socialLinks.facebook}
+                  onChange={(v) => setSocialLink('facebook', v)}
+                  hint="https://facebook.com/..."
+                />
+                <Field
+                  label="إنستجرام"
+                  value={content.contact.socialLinks.instagram}
+                  onChange={(v) => setSocialLink('instagram', v)}
+                  hint="https://instagram.com/..."
+                />
+                <Field
+                  label="X (تويتر)"
+                  value={content.contact.socialLinks.twitter}
+                  onChange={(v) => setSocialLink('twitter', v)}
+                  hint="https://x.com/..."
+                />
+                <Field
+                  label="واتساب (رابط)"
+                  value={content.contact.socialLinks.whatsapp}
+                  onChange={(v) => setSocialLink('whatsapp', v)}
+                  hint="https://wa.me/... أو رابط قناة"
+                />
+              </div>
+            </div>
+
             <div className="sm:col-span-2 space-y-2 rounded-lg border border-dashed p-4 bg-muted/20">
               <Label className="flex items-center gap-2 font-semibold">
                 <span>📍</span> رابط خريطة جوجل (Google Maps Embed)
