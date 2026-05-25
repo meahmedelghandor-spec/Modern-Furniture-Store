@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import Link from 'next/link';
+import FormattedPrice from '@/components/FormattedPrice';
 import { Trash2, HandCoins, ArrowLeft, Tag, PhoneCall, MessageCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -93,7 +94,7 @@ export default function CartPage() {
                             </h3>
                           </Link>
                           <p className="text-xs text-muted-foreground mt-0.5">سعر الشراء المقدّر</p>
-                          <p className="text-primary font-bold mt-0.5">{price.toLocaleString('ar-EG')} ج.م</p>
+                          <FormattedPrice amount={price} className="text-primary font-bold mt-0.5" />
                         </div>
                         <button
                           onClick={() => removeItem(item.product.id)}
@@ -141,9 +142,7 @@ export default function CartPage() {
                       <span className="text-muted-foreground line-clamp-1 flex-1 ml-2">
                         {item.product.name}
                       </span>
-                      <span className="font-medium flex-shrink-0">
-                        ~{price.toLocaleString('ar-EG')} ج.م
-                      </span>
+                      <FormattedPrice amount={price} approximate className="font-medium flex-shrink-0" />
                     </div>
                   );
                 })}
@@ -154,9 +153,11 @@ export default function CartPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">إجمالي السعر المقدّر</span>
-                  <span className="font-bold text-primary text-base">
-                    ~{estimatedTotal.toLocaleString('ar-EG')} ج.م
-                  </span>
+                  <FormattedPrice
+                    amount={estimatedTotal}
+                    approximate
+                    className="font-bold text-primary text-base"
+                  />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   * الأسعار تقديرية، يتم تأكيد السعر بعد المعاينة

@@ -120,6 +120,7 @@ export interface Database {
           status: string
           shipping_address: string | null
           phone: string | null
+          attachments: Json
           created_at: string
         }
         Insert: {
@@ -129,6 +130,7 @@ export interface Database {
           status?: string
           shipping_address?: string | null
           phone?: string | null
+          attachments?: Json
           created_at?: string
         }
         Update: {
@@ -138,6 +140,7 @@ export interface Database {
           status?: string
           shipping_address?: string | null
           phone?: string | null
+          attachments?: Json
           created_at?: string
         }
         Relationships: [
@@ -220,6 +223,7 @@ export interface Database {
           phone: string
           address: string | null
           notes: string | null
+          attachments: Json
           created_at: string
         }
         Insert: {
@@ -231,6 +235,7 @@ export interface Database {
           phone: string
           address?: string | null
           notes?: string | null
+          attachments?: Json
           created_at?: string
         }
         Update: {
@@ -242,6 +247,7 @@ export interface Database {
           phone?: string
           address?: string | null
           notes?: string | null
+          attachments?: Json
           created_at?: string
         }
         Relationships: [

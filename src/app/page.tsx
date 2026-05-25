@@ -2,6 +2,7 @@ import { adminSupabase } from '@/lib/supabase/admin';
 import { getSiteContent } from '@/lib/site-content';
 import Link from 'next/link';
 import { Sofa, BedDouble, Briefcase, ChevronLeft, CheckCircle2, PhoneCall, Tag } from 'lucide-react';
+import FormattedPrice from '@/components/FormattedPrice';
 import { Product } from '@/types/database.types';
 
 export const revalidate = 60;
@@ -263,7 +264,7 @@ function BuyItemCard({ product }: { product: Product }) {
         <div className="flex items-center justify-between mt-2">
           <div>
             <p className="text-xs text-muted-foreground">نشتري بحتى</p>
-            <p className="text-lg font-bold text-primary">{buyPrice.toLocaleString('ar-EG')} ج.م</p>
+            <FormattedPrice amount={buyPrice} className="text-lg font-bold text-primary" />
           </div>
           <Link
             href={`/catalog/${product.id}`}

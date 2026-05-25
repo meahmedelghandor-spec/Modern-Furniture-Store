@@ -1,4 +1,5 @@
 import { adminSupabase } from '@/lib/supabase/admin';
+import { parseAttachments } from '@/lib/parse-attachments';
 import OrdersClient, { type AdminRequest } from './OrdersClient';
 
 export const revalidate = 0;
@@ -11,6 +12,7 @@ type EvaluationRow = {
   created_at: string;
   phone: string;
   address: string | null;
+  attachments?: unknown;
   products: { name: string; images: string[] | null; price: number } | null;
 };
 
@@ -42,6 +44,7 @@ async function fetchEvaluationRequests(): Promise<{
       created_at,
       phone,
       address,
+      attachments,
       products(name, images, price)
     `)
     .order('created_at', { ascending: false });
@@ -137,6 +140,7 @@ export default async function AdminOrdersPage() {
     created_at: o.created_at,
     phone: o.phone,
     shipping_address: o.shipping_address,
+    attachments: parseAttachments((o as { attachments?: unknown }).attachments),
     profiles: o.profiles,
     order_items: o.order_items ?? [],
   }));
@@ -149,6 +153,7 @@ export default async function AdminOrdersPage() {
     created_at: ev.created_at,
     phone: ev.phone,
     shipping_address: ev.address,
+    attachments: parseAttachments(ev.attachments),
     profiles: profilesByUserId[ev.user_id] ?? null,
     order_items: [
       {

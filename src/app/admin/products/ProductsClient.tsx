@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase/client';
+import FormattedPrice from '@/components/FormattedPrice';
+import { useSiteContent } from '@/contexts/SiteContentContext';
+import { CURRENCY_PRESETS } from '@/lib/currency';
 import { Product, Category } from '@/types/database.types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +37,8 @@ const emptyForm = {
 };
 
 export default function ProductsClient({ products: initialProducts, categories }: Props) {
+  const { global } = useSiteContent();
+  const currencyLabel = CURRENCY_PRESETS[global.currency]?.symbol ?? 'ج.م';
   const router = useRouter();
   const [products, setProducts] = useState(initialProducts);
   const [search, setSearch] = useState('');
@@ -203,9 +208,15 @@ export default function ProductsClient({ products: initialProducts, categories }
                   </td>
                   <td className="p-4">
                     <div className="flex flex-col">
-                      <span className="text-sm font-bold text-primary">{(product.discount_price ?? product.price).toLocaleString('ar-EG')} ج.م</span>
+                      <FormattedPrice
+                        amount={product.discount_price ?? product.price}
+                        className="text-sm font-bold text-primary"
+                      />
                       {product.discount_price && (
-                        <span className="text-xs text-muted-foreground line-through">{product.price.toLocaleString('ar-EG')}</span>
+                        <FormattedPrice
+                          amount={product.price}
+                          className="text-xs text-muted-foreground line-through"
+                        />
                       )}
                     </div>
                   </td>
@@ -284,7 +295,7 @@ export default function ProductsClient({ products: initialProducts, categories }
             {/* Price & Discount */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="prod-price">السعر (ج.م) *</Label>
+                <Label htmlFor="prod-price">السعر ({currencyLabel}) *</Label>
                 <Input id="prod-price" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} dir="ltr" />
               </div>
               <div className="space-y-2">

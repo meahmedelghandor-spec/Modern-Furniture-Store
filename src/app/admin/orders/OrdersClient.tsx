@@ -9,6 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
+import FormattedPrice from '@/components/FormattedPrice';
+import RequestAttachmentsGallery from '@/components/RequestAttachmentsGallery';
+import type { RequestAttachment } from '@/types/request-attachment';
 import { Package, Eye, Search, Clock, Truck, CheckCircle2, XCircle, Phone, MapPin, Tag } from 'lucide-react';
 
 export type AdminRequest = {
@@ -19,6 +22,7 @@ export type AdminRequest = {
   created_at: string;
   phone: string | null;
   shipping_address: string | null;
+  attachments: RequestAttachment[];
   profiles: { full_name: string | null; phone: string | null } | null;
   order_items: Array<{
     id: string;
@@ -180,7 +184,7 @@ export default function OrdersClient({ requests: initial }: { requests: AdminReq
                       </div>
                     </td>
                     <td className="p-4 hidden md:table-cell font-bold text-primary text-sm">
-                      {req.total_amount.toLocaleString('ar-EG')} ج.م
+                      <FormattedPrice amount={req.total_amount} />
                     </td>
                     <td className="p-4">
                       <Badge className={`border flex items-center gap-1 w-fit text-xs ${status.color}`}>
@@ -289,22 +293,25 @@ export default function OrdersClient({ requests: initial }: { requests: AdminReq
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium line-clamp-1">{item.products?.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {item.quantity} × {item.price.toLocaleString('ar-EG')} ج.م
+                          {item.quantity} × <FormattedPrice amount={item.price} />
                         </p>
                       </div>
-                      <span className="text-sm font-bold">
-                        {(item.quantity * item.price).toLocaleString('ar-EG')} ج.م
-                      </span>
+                      <FormattedPrice
+                        amount={item.quantity * item.price}
+                        className="text-sm font-bold"
+                      />
                     </div>
                   ))}
                 </div>
               </div>
 
+              <RequestAttachmentsGallery attachments={selected.attachments} />
+
               <Separator />
 
               <div className="flex justify-between font-bold">
                 <span>{selected.kind === 'evaluation' ? 'السعر التقديري' : 'الإجمالي'}</span>
-                <span className="text-primary">{selected.total_amount.toLocaleString('ar-EG')} ج.م</span>
+                <FormattedPrice amount={selected.total_amount} className="text-primary" />
               </div>
 
               <div>

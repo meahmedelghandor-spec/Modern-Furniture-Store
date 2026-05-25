@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import { adminSupabase } from '@/lib/supabase/admin';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import { SiteContentProvider } from '@/contexts/SiteContentContext';
+import { getSiteContent } from '@/lib/site-content';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import type { ProfileRoleRow } from '@/types/database.types';
 
@@ -28,17 +30,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/');
   }
 
+  const siteContent = await getSiteContent();
+
   return (
-    <div className="flex flex-1 min-h-0">
-      <AdminSidebar
-        userEmail={user.email ?? ''}
-        userName={profile.full_name ?? 'Admin'}
-      />
-      <main className="flex-1 overflow-auto bg-muted/30">
-        <div className="p-6 lg:p-8 max-w-screen-2xl mx-auto">
-          {children}
-        </div>
-      </main>
-    </div>
+    <SiteContentProvider content={siteContent}>
+      <div className="flex flex-1 min-h-0">
+        <AdminSidebar
+          userEmail={user.email ?? ''}
+          userName={profile.full_name ?? 'Admin'}
+        />
+        <main className="flex-1 overflow-auto bg-muted/30">
+          <div className="p-6 lg:p-8 max-w-screen-2xl mx-auto">{children}</div>
+        </main>
+      </div>
+    </SiteContentProvider>
   );
 }

@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { User, Package, Loader2, CheckCircle2, Clock, Truck, Home } from 'lucide-react';
+import FormattedPrice from '@/components/FormattedPrice';
 import { Profile, Order } from '@/types/database.types';
 
 const statusMap: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
@@ -192,7 +193,7 @@ export default function ProfilePage() {
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground mb-1">الإجمالي</p>
-                        <p className="font-bold text-primary">{order.total_amount.toLocaleString('ar-EG')} ج.م</p>
+                        <FormattedPrice amount={order.total_amount} className="font-bold text-primary" />
                       </div>
                     </div>
                     <Separator className="my-3" />

@@ -1,9 +1,14 @@
 import { adminSupabase } from '@/lib/supabase/admin';
+import { formatPrice, CURRENCY_PRESETS } from '@/lib/currency';
+import { getSiteContent } from '@/lib/site-content';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ShoppingBag, Users, TrendingUp, ArrowUpRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminDashboard() {
+  const { global } = await getSiteContent();
+  const currencySymbol = CURRENCY_PRESETS[global.currency]?.symbol ?? 'ج.م';
+
   const [
     { count: productCount },
     { count: orderCount },
@@ -26,7 +31,14 @@ export default async function AdminDashboard() {
     { label: 'إجمالي الأصناف', value: productCount ?? 0, icon: Package, href: '/admin/products', color: 'text-blue-500', bg: 'bg-blue-50' },
     { label: 'طلبات الشراء', value: orderCount ?? 0, icon: ShoppingBag, href: '/admin/orders', color: 'text-purple-500', bg: 'bg-purple-50' },
     { label: 'المستخدمين', value: userCount ?? 0, icon: Users, href: '#', color: 'text-green-500', bg: 'bg-green-50' },
-    { label: 'إجمالي المدفوع (ج.م)', value: totalRevenue.toLocaleString('ar-EG'), icon: TrendingUp, href: '#', color: 'text-amber-500', bg: 'bg-amber-50' },
+    {
+      label: `إجمالي المدفوع (${currencySymbol})`,
+      value: formatPrice(totalRevenue, global.currency).replace(/^~/, ''),
+      icon: TrendingUp,
+      href: '#',
+      color: 'text-amber-500',
+      bg: 'bg-amber-50',
+    },
   ];
 
   const statusMap: Record<string, string> = {
@@ -86,7 +98,9 @@ export default async function AdminDashboard() {
                     </div>
                   </div>
                   <div className="text-left flex flex-col items-end gap-1">
-                    <span className="text-sm font-bold">{order.total_amount.toLocaleString('ar-EG')} ج.م</span>
+                    <span className="text-sm font-bold">
+                      {formatPrice(order.total_amount, global.currency)}
+                    </span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       order.status === 'delivered' ? 'bg-green-100 text-green-700' :
                       order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :

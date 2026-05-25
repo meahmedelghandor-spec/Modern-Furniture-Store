@@ -1,3 +1,5 @@
+import type { CurrencyCode } from '@/lib/currency';
+
 export interface SiteGlobal {
   siteName: string;
   phone: string;
@@ -5,6 +7,8 @@ export interface SiteGlobal {
   whatsapp: string;
   email: string;
   address: string;
+  /** عملة عرض الأسعار في الموقع ولوحة التحكم */
+  currency: CurrencyCode;
 }
 
 export interface CatalogContent {
@@ -119,6 +123,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     whatsapp: '20100000000',
     email: 'info@nushtri-athath.com',
     address: 'القاهرة، مصر',
+    currency: 'EGP',
   },
   catalog: {
     metaTitle: 'ما نشتريه | نشتري أثاثك',

@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tag, Eye, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { Product } from '@/types/database.types';
+import FormattedPrice from '@/components/FormattedPrice';
 import { useState } from 'react';
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -65,9 +66,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </p>
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-muted-foreground">نشتري بحتى</span>
-          <span className="text-lg font-bold text-primary">
-            {buyPrice.toLocaleString('ar-EG')} ج.م
-          </span>
+          <FormattedPrice amount={buyPrice} className="text-lg font-bold text-primary" />
         </div>
       </CardContent>
 

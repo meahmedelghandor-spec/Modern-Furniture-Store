@@ -19,9 +19,13 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
+import FormattedPrice from '@/components/FormattedPrice';
+import RequestMediaUpload from '@/components/RequestMediaUpload';
 import { Product } from '@/types/database.types';
 import type { SiteGlobal } from '@/types/site-content';
+import type { RequestAttachment } from '@/types/request-attachment';
 import { useAuth } from '@/contexts/AuthContext';
+import { uploadRequestMedia } from '@/lib/upload-request-media';
 import { supabase } from '@/lib/supabase/client';
 
 interface Props {
@@ -50,6 +54,7 @@ export default function ProductDetailClient({ product, related, contact }: Props
   const [requested, setRequested] = useState(false);
 
   const [form, setForm] = useState({ phone: '', address: '', notes: '' });
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
 
   const images = product.images?.length
     ? product.images
@@ -92,6 +97,20 @@ export default function ProductDetailClient({ product, related, contact }: Props
     setSubmitting(true);
     setFormError(null);
 
+    let attachments: RequestAttachment[] = [];
+    if (mediaFiles.length > 0) {
+      const { attachments: uploaded, error: uploadError } = await uploadRequestMedia(
+        user.id,
+        mediaFiles
+      );
+      if (uploadError) {
+        setFormError(uploadError);
+        setSubmitting(false);
+        return false;
+      }
+      attachments = uploaded;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from('evaluation_requests').insert({
       user_id: user.id,
@@ -101,6 +120,7 @@ export default function ProductDetailClient({ product, related, contact }: Props
       phone: phone.trim(),
       address: address?.trim() || null,
       notes: notes?.trim() || null,
+      attachments,
     });
 
     if (error) {
@@ -121,6 +141,7 @@ export default function ProductDetailClient({ product, related, contact }: Props
 
     setSubmitting(false);
     setModalOpen(false);
+    setMediaFiles([]);
     setRequested(true);
     setToast('✓ تم إرسال طلب التقييم! سنتواصل معك قريباً.');
     window.setTimeout(() => setRequested(false), 5000);
@@ -241,13 +262,12 @@ export default function ProductDetailClient({ product, related, contact }: Props
           <div className="rounded-2xl bg-primary/5 border border-primary/20 p-5">
             <p className="text-sm text-muted-foreground mb-1">سعر الشراء المقدّر</p>
             <div className="flex items-end gap-3">
-              <span className="text-4xl font-bold text-primary">
-                {buyPrice.toLocaleString('ar-EG')} ج.م
-              </span>
+              <FormattedPrice amount={buyPrice} className="text-4xl font-bold text-primary" />
               {product.discount_price !== null && product.discount_price < product.price && (
-                <span className="text-lg text-muted-foreground line-through mb-1">
-                  {product.price.toLocaleString('ar-EG')} ج.م
-                </span>
+                <FormattedPrice
+                  amount={product.price}
+                  className="text-lg text-muted-foreground line-through mb-1"
+                />
               )}
             </div>
             <p className="text-xs text-muted-foreground mt-2">* السعر النهائي يُحدّد بعد المعاينة</p>
@@ -263,6 +283,12 @@ export default function ProductDetailClient({ product, related, contact }: Props
             <CheckCircle2 className="h-5 w-5 text-green-500" />
             <span className="text-sm font-medium text-green-600">نستقبل هذا الصنف الآن</span>
           </div>
+
+          <RequestMediaUpload
+            files={mediaFiles}
+            onChange={setMediaFiles}
+            disabled={submitting}
+          />
 
           <div className="flex flex-col gap-3">
             <Button
@@ -384,6 +410,12 @@ export default function ProductDetailClient({ product, related, contact }: Props
                 disabled={submitting}
               />
             </div>
+            <RequestMediaUpload
+              files={mediaFiles}
+              onChange={setMediaFiles}
+              disabled={submitting}
+              hint="يمكنك إضافة نفس الملفات المعروضة أعلى الصفحة."
+            />
             <DialogFooter className="gap-2 sm:gap-0">
               <Button type="button" variant="outline" onClick={() => setModalOpen(false)} disabled={submitting}>
                 إلغاء
@@ -421,7 +453,7 @@ function RelatedCard({ product }: { product: Product }) {
       <div className="p-3 flex flex-col gap-1">
         <h3 className="font-semibold text-sm line-clamp-2">{product.name}</h3>
         <p className="text-xs text-muted-foreground">نشتري بحتى</p>
-        <p className="text-base font-bold text-primary">{buyPrice.toLocaleString('ar-EG')} ج.م</p>
+        <FormattedPrice amount={buyPrice} className="text-base font-bold text-primary" />
       </div>
     </Link>
   );

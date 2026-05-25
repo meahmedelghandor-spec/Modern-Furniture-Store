@@ -17,7 +17,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Save, Plus, Trash2, Globe, ShoppingBag, Briefcase, Users, Phone } from 'lucide-react';
+import { CURRENCY_OPTIONS, type CurrencyCode } from '@/lib/currency';
+import { Loader2, Save, Plus, Trash2, Globe, ShoppingBag, Briefcase, Users, Phone, Coins } from 'lucide-react';
 
 type TabId = 'global' | 'catalog' | 'services' | 'about' | 'contact';
 
@@ -282,6 +283,30 @@ export default function ContentClient({ initialContent, categories }: Props) {
             />
             <Field label="البريد الإلكتروني" value={content.global.email} onChange={(v) => setGlobal({ email: v })} />
             <Field label="العنوان" value={content.global.address} onChange={(v) => setGlobal({ address: v })} />
+            <div className="space-y-2 sm:col-span-2">
+              <Label className="flex items-center gap-2">
+                <Coins className="h-4 w-4 text-primary" />
+                عملة عرض الأسعار
+              </Label>
+              <Select
+                value={content.global.currency}
+                onValueChange={(v) => setGlobal({ currency: v as CurrencyCode })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="اختر العملة" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCY_OPTIONS.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                تُطبَّق على الموقع العام ولوحة التحكم (المنتجات، الطلبات، السلة).
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}

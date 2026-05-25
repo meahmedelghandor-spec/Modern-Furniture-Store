@@ -12,6 +12,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import Link from 'next/link';
+import RequestMediaUpload from '@/components/RequestMediaUpload';
+import FormattedPrice from '@/components/FormattedPrice';
+import { uploadRequestMedia } from '@/lib/upload-request-media';
+import type { RequestAttachment } from '@/types/request-attachment';
 import { HandCoins, Tag, CheckCircle2, Loader2 } from 'lucide-react';
 
 export default function CheckoutPage() {
@@ -29,6 +33,7 @@ export default function CheckoutPage() {
     address: '',
     notes: '',
   });
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,12 +87,27 @@ export default function CheckoutPage() {
       return total + price;
     }, 0);
 
+    let attachments: RequestAttachment[] = [];
+    if (mediaFiles.length > 0) {
+      const { attachments: uploaded, error: uploadError } = await uploadRequestMedia(
+        user.id,
+        mediaFiles
+      );
+      if (uploadError) {
+        setError(uploadError);
+        setSubmitting(false);
+        return;
+      }
+      attachments = uploaded;
+    }
+
     const { data: order, error: orderError } = await supabase.from('orders').insert({
       user_id: user.id,
       total_amount: estimatedTotal,
       status: 'pending',
       shipping_address: form.address,
       phone: form.phone,
+      attachments,
     }).select().single();
 
     if (orderError || !order) {
@@ -212,6 +232,11 @@ export default function CheckoutPage() {
                     rows={3}
                   />
                 </div>
+                <RequestMediaUpload
+                  files={mediaFiles}
+                  onChange={setMediaFiles}
+                  disabled={submitting}
+                />
               </CardContent>
             </Card>
 
@@ -254,7 +279,7 @@ export default function CheckoutPage() {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium line-clamp-1">{item.product.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            ~{itemPrice.toLocaleString('ar-EG')} ج.م
+                            <FormattedPrice amount={itemPrice} approximate />
                           </p>
                         </div>
                         <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
@@ -268,9 +293,11 @@ export default function CheckoutPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">إجمالي السعر المقدّر</span>
-                    <span className="font-bold text-primary">
-                      ~{estimatedTotal.toLocaleString('ar-EG')} ج.م
-                    </span>
+                    <FormattedPrice
+                      amount={estimatedTotal}
+                      approximate
+                      className="font-bold text-primary"
+                    />
                   </div>
                   <p className="text-xs text-muted-foreground">
                     * السعر النهائي يُحدّد بعد المعاينة الفعلية

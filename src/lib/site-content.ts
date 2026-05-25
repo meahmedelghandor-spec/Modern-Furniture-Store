@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { resolveCurrencyCode } from '@/lib/currency';
 import { normalizeSocialItems } from '@/lib/social-links';
 import {
   DEFAULT_SITE_CONTENT,
@@ -35,8 +36,15 @@ export function mergeSiteContent(
 ): SiteContent {
   if (!partial) return defaults;
 
+  const globalPartial = partial.global;
   return {
-    global: { ...defaults.global, ...(partial.global ?? {}) },
+    global: {
+      ...defaults.global,
+      ...(globalPartial ?? {}),
+      currency: resolveCurrencyCode(
+        globalPartial?.currency ?? defaults.global.currency
+      ),
+    },
     catalog: {
       ...defaults.catalog,
       ...(partial.catalog ?? {}),
