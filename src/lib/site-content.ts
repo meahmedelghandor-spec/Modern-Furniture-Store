@@ -1,9 +1,11 @@
 import { cache } from 'react';
 import { adminSupabase } from '@/lib/supabase/admin';
+import { normalizeSocialItems } from '@/lib/social-links';
 import {
   DEFAULT_SITE_CONTENT,
   type SiteContent,
   type SiteGlobal,
+  type ContactContent,
 } from '@/types/site-content';
 
 function mergeRecords(
@@ -11,6 +13,20 @@ function mergeRecords(
   partial?: Record<string, string>
 ): Record<string, string> {
   return { ...defaults, ...(partial ?? {}) };
+}
+
+function mergeContact(defaults: ContactContent, partial?: Partial<ContactContent>): ContactContent {
+  const merged = { ...defaults, ...(partial ?? {}) };
+  const socialItems = normalizeSocialItems({
+    ...merged,
+    socialItems: partial?.socialItems,
+    socialLinks: (partial as ContactContent & { socialLinks?: Record<string, string> })?.socialLinks,
+  });
+
+  return {
+    ...merged,
+    socialItems: socialItems.length > 0 ? socialItems : defaults.socialItems,
+  };
 }
 
 export function mergeSiteContent(
@@ -45,14 +61,7 @@ export function mergeSiteContent(
           ? partial.about.paragraphs
           : defaults.about.paragraphs,
     },
-    contact: {
-      ...defaults.contact,
-      ...(partial.contact ?? {}),
-      socialLinks: {
-        ...defaults.contact.socialLinks,
-        ...(partial.contact?.socialLinks ?? {}),
-      },
-    },
+    contact: mergeContact(defaults.contact, partial.contact),
   };
 }
 

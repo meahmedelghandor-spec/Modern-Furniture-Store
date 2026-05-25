@@ -90,7 +90,7 @@ export default async function ContactPage() {
             <p className="text-sm text-muted-foreground">{contact.footerNote}</p>
 
             <SocialLinks
-              social={contact.socialLinks}
+              items={contact.socialItems}
               whatsappFallback={global.whatsapp}
               title={contact.socialLinksTitle}
               showTitle

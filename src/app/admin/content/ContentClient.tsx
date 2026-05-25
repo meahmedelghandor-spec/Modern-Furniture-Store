@@ -6,7 +6,10 @@ import { Category } from '@/types/database.types';
 import {
   type SiteContent,
   type ServiceItem,
+  type SocialLinkItem,
+  type SocialPlatformId,
   SERVICE_ICON_OPTIONS,
+  SOCIAL_PLATFORM_OPTIONS,
 } from '@/types/site-content';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -133,12 +136,40 @@ export default function ContentClient({ initialContent, categories }: Props) {
   const setContact = (patch: Partial<SiteContent['contact']>) =>
     setContent((c) => ({ ...c, contact: { ...c.contact, ...patch } }));
 
-  const setSocialLink = (key: keyof SiteContent['contact']['socialLinks'], value: string) =>
+  const newSocialId = () =>
+    typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `social-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+  const addSocialItem = () =>
     setContent((c) => ({
       ...c,
       contact: {
         ...c.contact,
-        socialLinks: { ...c.contact.socialLinks, [key]: value },
+        socialItems: [
+          ...c.contact.socialItems,
+          { id: newSocialId(), platform: 'facebook', url: '' },
+        ],
+      },
+    }));
+
+  const updateSocialItem = (id: string, patch: Partial<SocialLinkItem>) =>
+    setContent((c) => ({
+      ...c,
+      contact: {
+        ...c.contact,
+        socialItems: c.contact.socialItems.map((item) =>
+          item.id === id ? { ...item, ...patch } : item
+        ),
+      },
+    }));
+
+  const removeSocialItem = (id: string) =>
+    setContent((c) => ({
+      ...c,
+      contact: {
+        ...c.contact,
+        socialItems: c.contact.socialItems.filter((item) => item.id !== id),
       },
     }));
 
@@ -540,38 +571,91 @@ export default function ContentClient({ initialContent, categories }: Props) {
                   placeholder="تابعنا على"
                 />
               </div>
-              <p className="text-sm font-semibold flex items-center gap-2">
-                <span>🔗</span> روابط وسائل التواصل
-              </p>
-              <p className="text-xs text-muted-foreground -mt-2">
-                اترك الحقل فارغاً لإخفاء الأيقونة. واتساب: إن تُرك فارغاً يُستخدم رقم الواتساب من تبويب «عام».
-              </p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Field
-                  label="فيسبوك"
-                  value={content.contact.socialLinks.facebook}
-                  onChange={(v) => setSocialLink('facebook', v)}
-                  hint="https://facebook.com/..."
-                />
-                <Field
-                  label="إنستجرام"
-                  value={content.contact.socialLinks.instagram}
-                  onChange={(v) => setSocialLink('instagram', v)}
-                  hint="https://instagram.com/..."
-                />
-                <Field
-                  label="X (تويتر)"
-                  value={content.contact.socialLinks.twitter}
-                  onChange={(v) => setSocialLink('twitter', v)}
-                  hint="https://x.com/..."
-                />
-                <Field
-                  label="واتساب (رابط)"
-                  value={content.contact.socialLinks.whatsapp}
-                  onChange={(v) => setSocialLink('whatsapp', v)}
-                  hint="https://wa.me/... أو رابط قناة"
-                />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold flex items-center gap-2">
+                    <span>🔗</span> روابط وسائل التواصل
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    أضف أي منصة (تيك توك، سناب، يوتيوب…). اترك الرابط فارغاً لإخفاء الأيقونة بعد الحفظ.
+                  </p>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={addSocialItem} className="gap-1 shrink-0">
+                  <Plus className="h-4 w-4" />
+                  إضافة رابط
+                </Button>
               </div>
+
+              {content.contact.socialItems.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6 border rounded-lg border-dashed">
+                  لا توجد روابط بعد. اضغط «إضافة رابط» لبدء الإضافة.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {content.contact.socialItems.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className="grid gap-3 p-3 rounded-lg border bg-background sm:grid-cols-[1fr_1fr_2fr_auto] items-end"
+                    >
+                      <div className="space-y-2">
+                        <Label>المنصة</Label>
+                        <Select
+                          value={item.platform}
+                          onValueChange={(v) =>
+                            v && updateSocialItem(item.id, { platform: v as SocialPlatformId })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {SOCIAL_PLATFORM_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.id} value={opt.id}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {item.platform === 'custom' ? (
+                        <div className="space-y-2">
+                          <Label>اسم المنصة</Label>
+                          <Input
+                            value={item.label ?? ''}
+                            onChange={(e) => updateSocialItem(item.id, { label: e.target.value })}
+                            placeholder="مثال: Threads"
+                          />
+                        </div>
+                      ) : (
+                        <div className="hidden sm:block" />
+                      )}
+                      <div className="space-y-2 sm:col-span-1">
+                        <Label>الرابط</Label>
+                        <Input
+                          value={item.url}
+                          onChange={(e) => updateSocialItem(item.id, { url: e.target.value })}
+                          placeholder="https://..."
+                          dir="ltr"
+                          className="text-right"
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-600 shrink-0"
+                        onClick={() => removeSocialItem(item.id)}
+                        aria-label={`حذف رابط ${index + 1}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground">
+                إن لم تُضف واتساب هنا، يُعرض رقم الواتساب من تبويب «عام» تلقائياً في الموقع.
+              </p>
             </div>
 
             <div className="sm:col-span-2 space-y-2 rounded-lg border border-dashed p-4 bg-muted/20">

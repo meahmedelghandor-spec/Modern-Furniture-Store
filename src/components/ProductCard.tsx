@@ -27,7 +27,7 @@ export default function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <Card className="overflow-hidden flex flex-col group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-border/60">
+    <Card className="motion-card overflow-hidden flex flex-col group border-border/60">
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <Image

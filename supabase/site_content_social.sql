@@ -1,14 +1,11 @@
--- روابط السوشيال ميديا تُخزَّن داخل JSON في جدول site_content (id = 'main')
--- لا حاجة لجدول جديد. بعد تشغيل site_content.sql، عدّل المحتوى من لوحة:
--- /admin/content → تبويب «تواصل معنا»
+-- روابط السوشيال ميديا (قائمة ديناميكية) داخل site_content → contact.socialItems
 --
--- مثال على شكل الحقل داخل contact:
--- {
---   "socialLinksTitle": "تابعنا على",
---   "socialLinks": {
---     "facebook": "https://facebook.com/yourpage",
---     "instagram": "https://instagram.com/yourpage",
---     "twitter": "https://x.com/yourpage",
---     "whatsapp": "https://wa.me/201012345678"
---   }
--- }
+-- مثال:
+-- "socialItems": [
+--   { "id": "uuid-1", "platform": "tiktok", "url": "https://tiktok.com/@yourpage" },
+--   { "id": "uuid-2", "platform": "snapchat", "url": "https://snapchat.com/add/you" },
+--   { "id": "uuid-3", "platform": "custom", "label": "Threads", "url": "https://threads.net/@you" }
+-- ]
+--
+-- المنصات المدعومة: facebook, instagram, twitter, whatsapp, tiktok, snapchat,
+-- youtube, linkedin, telegram, pinterest, custom

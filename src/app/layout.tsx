@@ -3,6 +3,7 @@ import { Cairo } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SiteMotion from "@/components/SiteMotion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SiteContentProvider } from "@/contexts/SiteContentContext";
 import { getSiteContent } from "@/lib/site-content";
@@ -34,7 +35,7 @@ export default async function RootLayout({
           <SiteContentProvider content={siteContent}>
             <Navbar />
             <main className="flex-1 flex flex-col">
-              {children}
+              <SiteMotion>{children}</SiteMotion>
             </main>
             <Footer />
           </SiteContentProvider>

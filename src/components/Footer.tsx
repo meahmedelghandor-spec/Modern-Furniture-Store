@@ -41,7 +41,7 @@ export default async function Footer() {
         {/* روابط السوشيال — من قاعدة البيانات مع fallback لواتساب من الإعدادات العامة */}
         <div className="mt-8 flex justify-center">
           <SocialLinks
-            social={contact.socialLinks}
+            items={contact.socialItems}
             whatsappFallback={global.whatsapp}
             size="sm"
           />

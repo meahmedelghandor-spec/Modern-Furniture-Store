@@ -47,12 +47,40 @@ export interface AboutContent {
   contactButton: string;
 }
 
-export interface SocialMediaLinks {
-  facebook: string;
-  instagram: string;
-  twitter: string;
-  whatsapp: string;
+export type SocialPlatformId =
+  | 'facebook'
+  | 'instagram'
+  | 'twitter'
+  | 'whatsapp'
+  | 'tiktok'
+  | 'snapchat'
+  | 'youtube'
+  | 'linkedin'
+  | 'telegram'
+  | 'pinterest'
+  | 'custom';
+
+export interface SocialLinkItem {
+  id: string;
+  platform: SocialPlatformId;
+  /** للمنصة «أخرى» أو تسمية مخصصة */
+  label?: string;
+  url: string;
 }
+
+export const SOCIAL_PLATFORM_OPTIONS: { id: SocialPlatformId; label: string }[] = [
+  { id: 'facebook', label: 'فيسبوك' },
+  { id: 'instagram', label: 'إنستجرام' },
+  { id: 'twitter', label: 'X (تويتر)' },
+  { id: 'whatsapp', label: 'واتساب' },
+  { id: 'tiktok', label: 'تيك توك' },
+  { id: 'snapchat', label: 'سناب شات' },
+  { id: 'youtube', label: 'يوتيوب' },
+  { id: 'linkedin', label: 'لينكدإن' },
+  { id: 'telegram', label: 'تيليجرام' },
+  { id: 'pinterest', label: 'بينترست' },
+  { id: 'custom', label: 'منصة أخرى' },
+];
 
 export interface ContactContent {
   metaTitle: string;
@@ -69,19 +97,11 @@ export interface ContactContent {
   footerNote: string;
   formSuccessTitle: string;
   formSuccessMessage: string;
-  /** رابط Google Maps المضمّن (src الـ iframe) */
   googleMapsUrl: string;
-  /** عنوان قسم السوشيال ميديا */
   socialLinksTitle: string;
-  socialLinks: SocialMediaLinks;
+  /** قائمة ديناميكية — أضف أي منصة من لوحة التحكم */
+  socialItems: SocialLinkItem[];
 }
-
-export const DEFAULT_SOCIAL_LINKS: SocialMediaLinks = {
-  facebook: '',
-  instagram: '',
-  twitter: '',
-  whatsapp: '',
-};
 
 export interface SiteContent {
   global: SiteGlobal;
@@ -189,7 +209,7 @@ export const DEFAULT_SITE_CONTENT: SiteContent = {
     formSuccessMessage: 'شكراً لتواصلك. سنرد عليك في أقرب وقت ممكن.',
     googleMapsUrl: '',
     socialLinksTitle: 'تابعنا على',
-    socialLinks: { ...DEFAULT_SOCIAL_LINKS },
+    socialItems: [],
   },
 };
 
